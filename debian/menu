@@ -1,0 +1,2 @@
+?package(docker):needs="x11" section="Applications/Viewers"\
+  title="docker" command="/usr/bin/wmdocker"

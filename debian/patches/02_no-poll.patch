@@ -1,0 +1,68 @@
+Index: docker-1.5/docker.c
+===================================================================
+--- docker-1.5.orig/docker.c
++++ docker-1.5/docker.c
+@@ -5,6 +5,7 @@
+ #include "net.h"
+ 
+ #include <assert.h>
++#include <errno.h>
+ #include <signal.h>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -228,6 +229,36 @@ void fix_geometry()
+ }
+ 
+ 
++gboolean next_event(XEvent *event)
++{
++  int fd;
++  fd_set rfds;
++
++  if (XPending(display)) {
++    XNextEvent(display, event);
++    return TRUE;
++  }
++
++  fd = ConnectionNumber(display);
++  FD_ZERO(&rfds);
++  FD_SET(fd, &rfds);
++
++  if (select(fd + 1, &rfds, NULL, NULL, NULL) == -1) {
++    if (errno != EINTR) {
++      g_printerr("Error waiting for events (%s)", strerror(errno));
++      exit(1);
++    }
++    return FALSE; /* interrupted by a signal */
++  }
++
++  if (!FD_ISSET(fd, &rfds) || !XPending(display))
++    return FALSE; /* false positive */
++
++  XNextEvent(display, event);
++  return TRUE;
++}
++
++
+ void event_loop()
+ {
+   XEvent e;
+@@ -235,9 +266,7 @@ void event_loop()
+   GSList *it;
+   
+   while (!exit_app) {
+-    while (XPending(display)) {
+-      XNextEvent(display, &e);
+-
++    if (next_event(&e)) {
+       switch (e.type)
+       {
+       case PropertyNotify:
+@@ -303,7 +332,6 @@ void event_loop()
+         break;
+       }
+     }
+-    usleep(500000);
+   }
+ 
+   /* remove/unparent all the icons */

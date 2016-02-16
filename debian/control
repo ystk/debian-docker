@@ -1,0 +1,17 @@
+Source: docker
+Section: x11
+Priority: optional
+Maintainer: Paul Tagliamonte <paultag@debian.org>
+Uploaders: Ari Pollak <ari@debian.org>,
+ Tianon Gravi <admwiggin@gmail.com>
+Build-Depends: debhelper (>= 9), libglib2.0-dev, libx11-dev, quilt
+Standards-Version: 3.9.5
+
+Package: docker
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: System tray for KDE3/GNOME2 docklet applications
+ Docker is a docking application (WindowMaker dock app) which acts as a system
+ tray for any desktop environment, allowing you to have a system tray without
+ running the KDE/GNOME panel Docker was designed to work with Openbox 2, but it
+ should work fine in any window manager.

@@ -1,0 +1,18 @@
+Description: Fix FTBFS binutils-gold with ld --no-add-needed
+Author: Mahyuddin Susanto <udienz@gmail.com>
+Ubuntu-Bug: https://launchpad.net/bugs/704871
+
+--- a/Makefile	2014-06-11 14:24:50.107443351 -0400
++++ b/Makefile	2014-06-11 14:25:50.131852879 -0400
+@@ -30,8 +30,9 @@ all: $(target) $(sources) $(headers)
+ 	@echo Build Successful
+ 
+ $(target): $(sources:.c=.o)
+-	$(CC) $(CFLAGS) -L$(XLIBPATH) -lX11 \
+-		`pkg-config --libs glib-2.0` $^ -o $@
++	$(CC) $(CFLAGS) \
++		$^ -o $@ \
++		-L$(XLIBPATH) -lX11 `pkg-config --libs glib-2.0`
+ 
+ %.o: %.c
+ 	$(CC) -c $(CFLAGS) `pkg-config --cflags glib-2.0` $<
